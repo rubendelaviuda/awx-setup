@@ -1115,7 +1115,7 @@ function uninstall_awx {
 
 	# Deletes set-up files
 	echo "🗑️   Deleting setup-files..."
-	awx_setup_file > echo /var/lib/awx/awx-setup-file
+	awx_setup_file=$(echo /var/lib/awx/awx-setup-file)
 	sudo rm -rf "$awx_setup_file/minikube-linux-amd64" 2>&1> /dev/null
 	sudo rm -rf "$awx_setup_file/kustomize_v4.5.7_linux_amd64.tar" 2>&1> /dev/null
 	sudo rm -rf "$awx_setup_file/kustomize_v4.5.7_linux_amd64.tar.gz" 2>&1> /dev/null
