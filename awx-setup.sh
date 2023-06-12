@@ -1499,7 +1499,8 @@ done
 # If the answer is 'n' or 'N', exits the script
 if [[ $answer == "n" || $answer == "N" ]]
 then
-	exit 1
+	echo ""
+	exit 0
 fi
 
 if [ -f "/var/lib/awx/awx-user" ] && [ -s "/var/lib/awx/awx-user" ]; then
