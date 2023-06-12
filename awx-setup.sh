@@ -1516,7 +1516,8 @@ if [ "$current_user" != "$username" ]; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  You must run this script with the user $username"
-	deletesetup
+	echo ""
+	exit 1
 fi
 
 # Requests the user's system password
