@@ -233,20 +233,25 @@ fi
 
 # Installs docker
 echo "🔧  Installing docker..."
-if ! sudo apt-get install -y docker.io > /dev/null; then
+# Creates the group docker
+if ! sudo groupadd docker; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing docker"
 	deletesetup
 fi
-
-# Adds the selected user to the docker group.
-if sudo usermod -aG docker "$username"; then
-	:
-else
+# Adds the selected user to the docker group
+if ! sudo usermod -aG docker "$username"; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
-	echo "❌  Error adding user to docker group"
+	echo "❌  Error installing docker"
+	deletesetup
+fi
+# Installs docker
+if ! sudo apt-get install -y docker.io > /dev/null; then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error installing docker"
 	deletesetup
 fi
 
