@@ -1090,7 +1090,7 @@ function uninstall_awx {
 	fi
 
 	# Removes the command tabulation entry
-	echo "🗑️  Removing command tabulation entry..."
+	echo "🗑️   Removing command tabulation entry..."
 	if ! sudo rm /etc/bash_completion.d/awxctl > /dev/null; then
 		echo ""
 		echo "❌  Error removing command tabulation entry"
@@ -1106,7 +1106,7 @@ function uninstall_awx {
 	fi
 
 	# Deletes the temporary files
-	echo "🗑️  Deleting temporary files..."
+	echo "🗑️   Deleting temporary files..."
 	if ! sudo rm -r /var/lib/awx > /dev/null; then
 		echo ""
 		echo "❌  Error deleting temporary files"
@@ -1114,7 +1114,7 @@ function uninstall_awx {
 	fi
 
 	# Deletes set-up files
-	echo "🗑️  Deleting setup-files..."
+	echo "🗑️   Deleting setup-files..."
 	awx_setup_file > echo /var/lib/awx/awx-setup-file
 	sudo rm -rf "$awx_setup_file/minikube-linux-amd64" 2>&1> /dev/null
 	sudo rm -rf "$awx_setup_file/kustomize_v4.5.7_linux_amd64.tar" 2>&1> /dev/null
@@ -1155,7 +1155,7 @@ function uninstall_awx {
 		fi
 
 		# Removes the docker group
-		echo "🗑️  Removing docker group..."
+		echo "🗑️   Removing docker group..."
 		if ! sudo groupdel docker > /dev/null; then
 			echo ""
 			echo "❌  Error removing docker group"
