@@ -190,10 +190,11 @@ echo ""
 
 # Checks the internet connection by pinging Google
 echo "🌐  Checking internet connection..."
-ping -c4 google.com > /dev/null
+ping -c4 google.com 2>&1> /dev/null
 # If it doesn't work...
 if ! [ $? -eq 0 ]; then
 	# Informs the user about the error and exits the script with errors
+	echo ""
 	echo "❌  Failed to access internet"
 	exit 1
 fi
@@ -668,7 +669,7 @@ function check_status {
 function check_net {
 
 	# Checks the internet connection by pinging Google
-	ping -c4 google.com > /dev/null
+	ping -c4 google.com 2>&1> /dev/null
 
 	# If it doesn't work...
 	if ! [ $? -eq 0 ]; then
@@ -1550,7 +1551,7 @@ printf '\033[1m🔨  SET UP 2 - STATUS  🔨\n--------------------------\033[0m\
 echo ""
 
 # Checks the internet connection by pinging Google
-ping -c4 google.com > /dev/null
+ping -c4 google.com 2>&1> /dev/null
 
 # If it doesn't work...
 if ! [ $? -eq 0 ]; then
