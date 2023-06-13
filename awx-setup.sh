@@ -244,7 +244,7 @@ fi
 # Installs docker
 echo "🔧  Installing docker..."
 # Creates the group docker
-if ! sudo groupadd docker 2>&1> /dev/null; then
+if ! sudo groupadd -f docker 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing docker"
