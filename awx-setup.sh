@@ -26,7 +26,7 @@ function deletesetup {
 	sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
 	sudo chmod 755 /bin/ 2>&1> /dev/null
 	sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
-	cd "$current_path" > 2>&1> /dev/null
+	cd "$current_path" 2>&1> /dev/null
 	echo ""
 	exit 1
 
