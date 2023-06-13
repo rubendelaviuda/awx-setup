@@ -196,10 +196,12 @@ done
 echo ""
 echo ""
 
+# Script title
 printf '\033[1m🔨  SET UP 1 - STATUS  🔨\n--------------------------\033[0m\n'
 
 echo ""
 
+# Updates repositories list
 echo "🔃  Updating repositories list..."
 if ! sudo apt-get update > /dev/null
 then
@@ -446,7 +448,7 @@ repository="https://github.com/rubendelaviuda/awx-setup"
 
 # --------------
 # The following are functions and commands that awxctl will be able to execute
-# You can add your own functions. You just need to include them in the show_help and the final case
+# You can add your own functions. You just need to include them in the show_help and in the final case
 # --------------
 
 # Show title function
@@ -1505,6 +1507,7 @@ echo ""
 printf '\033[1m🔨  AWX SET UP - PART 2  🔨\n----------------------------\033[0m\n'
 echo ""
 
+# Checks if the file /var/lib/awx/awx-user exists and is not empty
 if [ -f "/var/lib/awx/awx-user" ] && [ -s "/var/lib/awx/awx-user" ]; then
 	username=$(cat /var/lib/awx/awx-user)
 else
@@ -1514,7 +1517,7 @@ else
 fi
 current_user=$(whoami)
 
-# Checks if the user is in the "docker" group
+# Checks if the installation user is the same as the one being used
 if [ "$current_user" != "$username" ]; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
@@ -1551,7 +1554,7 @@ fi
 
 echo ""
 
-# Asks the user if they want to delete the temporary files that have been used for the installation
+# Asks the user if they want to delete the temporary files that have been used for the setup
 echo "🗑️   Would you like to remove the temporary files used for the set up? (y/N)"
 read -p "⏩  " answer
 # If the user enters an invalid command, repeats the question.
@@ -1564,6 +1567,8 @@ done
 
 echo ""
 echo ""
+
+# Script title
 printf '\033[1m🔨  SET UP 2 - STATUS  🔨\n--------------------------\033[0m\n'
 echo ""
 
@@ -1728,15 +1733,17 @@ echo "🕔  Rebooting in 10 seconds..."
 
 echo ""
 
-# If the answer is 'n', 'N' or enter, exits the script
+# If the user chose not to delete the temporary files, exits the script
 if [[ $answer == "n" || $answer == "N" || $answer == "" ]]
 then
+	# Waits 10 seconds and reboots the system
 	cd "$current_path" 2>&1> /dev/null
 	sleep 10
-	echo ""
 	sudo reboot
+	exit 0
 fi
 
+# Delete the temporarys files
 sudo rm -rf minikube-linux-amd64 2>&1> /dev/null
 sudo rm -rf kustomize_v4.5.7_linux_amd64.tar 2>&1> /dev/null
 sudo rm -rf kustomize_v4.5.7_linux_amd64.tar.gz 2>&1> /dev/null
@@ -1751,12 +1758,15 @@ sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
 sudo chmod 755 /bin/ 2>&1> /dev/null
 sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
 cd "$current_path" 2>&1> /dev/null
+
+# Waits 10 seconds and reboots the system
 sleep 10
-echo ""
 sudo reboot
+exit 0
 
 fi
 
+# Error message in case of an unexpected exit from the 'if' statement
 echo ""
 echo "❌  There has been an unknown error. Please contact the administrator"
 cd "$current_path" 2>&1> /dev/null
