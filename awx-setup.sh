@@ -336,7 +336,7 @@ if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl 2>&1> /
 	deletesetup
 fi
 # Checks if kubectl has been installed correctly
-if ! sudo kubectl version --short | grep -qE '(Client|Server|Kustomize) Version'; then
+if ! sudo kubectl version --short 2> /dev/null | grep -qE '(Client|Server|Kustomize) Version' > /dev/nullS; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing kubectl"
