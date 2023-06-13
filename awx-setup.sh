@@ -196,6 +196,7 @@ if ! [ $? -eq 0 ]; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Failed to access internet"
+	echo ""
 	exit 1
 fi
 
@@ -205,6 +206,7 @@ then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error checking the repositories list"
+	echo ""
 	exit 1
 fi
 
@@ -215,6 +217,7 @@ then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing curl"
+	echo ""
 	exit 1
 fi
 
@@ -1719,4 +1722,5 @@ deletesetup
 fi
 
 cd "$current_path" 2>&1> /dev/null
+echo ""
 exit 1
