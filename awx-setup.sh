@@ -207,22 +207,6 @@ then
 	exit 1
 fi
 
-# Creates the file /var/lib/awx/awx-setup-file
-if ! echo "$script_path" > /var/lib/awx/awx-setup-file
-then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Error creating automatic startup service"
-	deletesetup
-fi
-# Changes the permissions of the file /var/lib/awx/awx-setup-file
-if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Error creating automatic startup service"
-	deletesetup
-fi
-
 # Installs curl
 echo "🔧  Installing curl..."
 if ! sudo apt-get install -y curl > /dev/null
@@ -388,6 +372,21 @@ if ! sudo mkdir -p /var/lib/awx/ > /dev/null; then
 fi
 # Changes the permissions of the folder /var/lib/awx/
 if ! sudo chmod 777 /var/lib/awx/ > /dev/null; then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error copying control commands"
+	deletesetup
+fi
+# Creates the file /var/lib/awx/awx-setup-file
+if ! echo "$script_path" > /var/lib/awx/awx-setup-file
+then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error copying control commands"
+	deletesetup
+fi
+# Changes the permissions of the file /var/lib/awx/awx-setup-file
+if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
