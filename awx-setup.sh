@@ -1092,6 +1092,7 @@ function uninstall_awx {
 	fi
 
 	echo ""
+	echo ""
 
 	# Script title
 	printf '\033[1m🚮   UNINSTALL - STATUS  🚮\n---------------------------\033[0m\n'
@@ -1554,8 +1555,8 @@ printf '\033[1m🔨  SET UP 2 - STATUS  🔨\n--------------------------\033[0m\
 echo ""
 
 # Checks the internet connection by pinging Google
+echo "🌐  Checking internet connection..."
 ping_output=$(ping -c4 google.com 2>&1)
-
 # If it doesn't work...
 if ! [ $? -eq 0 ]; then
 	# Informs the user about the error and exits the script with errors
