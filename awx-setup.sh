@@ -36,6 +36,10 @@ function deletesetup {
 current_path="$(pwd)" 2>&1> /dev/null
 script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" 2>&1> /dev/null
 cd "$script_path" 2>&1> /dev/null
+echo "Current Path: $current_path"
+echo "Script Path: $script_path"
+echo ""
+echo ""
 
 # Checks if it is being run as an administrator
 if [[ $EUID -eq 0 ]]; then
@@ -76,6 +80,17 @@ if [ "$(nproc)" -lt 4 ]; then
 	if (( $(echo "$mem_mib < 6144" | bc -l) )); then
 		echo "❌  Your computer has "$mem_mib"MB of RAM and at least 6144MB are needed"
 	fi
+	echo ""
+	exit 1
+fi
+
+# Checks the internet connection by pinging Google
+ping_output=$(ping -c4 google.com 2>&1)
+# If it doesn't work...
+if ! [ $? -eq 0 ]; then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Failed to access internet"
 	echo ""
 	exit 1
 fi
@@ -187,18 +202,6 @@ echo ""
 printf '\033[1m🔨  SET UP 1 - STATUS  🔨\n--------------------------\033[0m\n'
 
 echo ""
-
-# Checks the internet connection by pinging Google
-echo "🌐  Checking internet connection..."
-ping_output=$(ping -c4 google.com 2>&1)
-# If it doesn't work...
-if ! [ $? -eq 0 ]; then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Failed to access internet"
-	echo ""
-	exit 1
-fi
 
 echo "🔃  Updating repositories list..."
 if ! sudo apt-get update > /dev/null
@@ -1052,6 +1055,9 @@ function uninstall_awx {
 	command=$2
 	parameter=$3
 
+	# Checks the internet connection
+	check_net "$param_num" "$command" "$parameter"
+
 	show_title "$param_num" "$command" "$parameter"
 
 	# Asks the user if they are sure about the uninstallation
@@ -1072,8 +1078,16 @@ function uninstall_awx {
 		good_exit
 	fi
 
-	# Asks the user if they also want to uninstall the dependencies
+	# Requests the user's system password
+	if ! sudo true; then
+		echo ""
+		echo "❌  You need to be a sudoer to run this script"
+		bad_exit
+	fi
+
 	echo ""
+
+	# Asks the user if they also want to uninstall the dependencies
 	echo "❓  Do you want to uninstall all dependencies as well? (y/N)"
 	read -p "⏩  " answer
 	# Saves the response in a variable
@@ -1084,13 +1098,6 @@ function uninstall_awx {
 		read -p "⏩  " answer
 	done
 
-	# Requests the user's system password
-	if ! sudo true; then
-		echo ""
-		echo "❌  You need to be a sudoer to run this script"
-		bad_exit
-	fi
-
 	echo ""
 	echo ""
 
@@ -1098,10 +1105,6 @@ function uninstall_awx {
 	printf '\033[1m🚮   UNINSTALL - STATUS  🚮\n---------------------------\033[0m\n'
 
 	echo ""
-
-	# Checks the internet connection
-	echo "🌐  Checking internet connection..."
-	check_net "$param_num" "$command" "$parameter"
 
 	# Uninstalls the service
 	echo "🔨  Uninstalling systemd service..."
@@ -1143,6 +1146,7 @@ function uninstall_awx {
 	# Deletes the temporary files
 	echo "🗑️   Deleting temporary files..."
 	awx_setup_file=$(echo /var/lib/awx/awx-setup-file)
+	echo "awx_setup_file es $6awx_setup_file"
 	if ! sudo rm -r /var/lib/awx > /dev/null; then
 		echo ""
 		echo "❌  Error deleting temporary files"
@@ -1505,23 +1509,6 @@ echo ""
 printf '\033[1m🔨  AWX SET UP - PART 2  🔨\n----------------------------\033[0m\n'
 echo ""
 
-# Asks the user if they are sure about the installation
-echo "❓  This script will install AWX on your system. Do you want to continue? (Y/n)"
-read -p "⏩  " answer
-# Loop to validate user response
-while [[ $answer != "s" && $answer != "S" && $answer != "y" && $answer != "Y" && $answer != "" && $answer != "n" && $answer != "N" ]]
-do
-	echo ""
-	echo "❓  This script will install AWX on your system. Do you want to continue? (Y/n)"
-	read -p "⏩  " answer
-done
-# If the answer is 'n' or 'N', exits the script
-if [[ $answer == "n" || $answer == "N" ]]
-then
-	echo ""
-	exit 0
-fi
-
 if [ -f "/var/lib/awx/awx-user" ] && [ -s "/var/lib/awx/awx-user" ]; then
 	username=$(cat /var/lib/awx/awx-user)
 else
@@ -1540,6 +1527,23 @@ if [ "$current_user" != "$username" ]; then
 	exit 1
 fi
 
+# Asks the user if they are sure about the installation
+echo "❓  This script will install AWX on your system and reboot it when finished. Do you want to continue? (Y/n)"
+read -p "⏩  " answer
+# Loop to validate user response
+while [[ $answer != "s" && $answer != "S" && $answer != "y" && $answer != "Y" && $answer != "" && $answer != "n" && $answer != "N" ]]
+do
+	echo ""
+	echo "❓  This script will install AWX on your system and reboot it when finished. Do you want to continue? (Y/n)"
+	read -p "⏩  " answer
+done
+# If the answer is 'n' or 'N', exits the script
+if [[ $answer == "n" || $answer == "N" ]]
+then
+	echo ""
+	exit 0
+fi
+
 # Requests the user's system password
 if ! sudo true; then
 	# Informs the user about the error and exits the script with errors
@@ -1550,19 +1554,22 @@ if ! sudo true; then
 fi
 
 echo ""
+
+# Asks the user if they want to delete the temporary files that have been used for the installation
+echo "🗑️   Would you like to remove the temporary files used for the set up? (y/N)"
+read -p "⏩  " answer
+# If the user enters an invalid command, repeats the question.
+while [[ $answer != "s" && $answer != "S" && $answer != "y" && $answer != "Y" && $answer != "" && $answer != "n" && $answer != "N" ]]
+do
+	echo ""
+	echo "🗑️   Would you like to remove the temporary files used for the set up? (y/N)"
+	read -p "⏩  " answer
+done
+
+echo ""
 echo ""
 printf '\033[1m🔨  SET UP 2 - STATUS  🔨\n--------------------------\033[0m\n'
 echo ""
-
-# Checks the internet connection by pinging Google
-echo "🌐  Checking internet connection..."
-ping_output=$(ping -c4 google.com 2>&1)
-# If it doesn't work...
-if ! [ $? -eq 0 ]; then
-	# Informs the user about the error and exits the script with errors
-	echo "❌  Failed to access internet"
-	deletesetup
-fi
 
 # Starts minikube
 echo "🚀  Starting minikube..."
@@ -1682,6 +1689,37 @@ if ! sudo systemctl enable -q auto-awx.service > /dev/null; then
 	deletesetup
 fi
 
+# Installs AWX
+echo "🕔  Installing AWX..."
+echo "🔧  This will take several minutes"
+# Checks if there is any 'kubectl' process running on the system and if so, kills it
+if pgrep tail > /dev/null; then
+	pkill kubectl
+fi
+# Creates an error control
+# If the user presses CTRL+C, kills the 'kubectl' process
+cleanup() {
+	pkill kubectl
+	cd "$current_path" 2>&1> /dev/null
+	exit 1
+}
+trap cleanup SIGINT SIGTERM SIGHUP
+# Waits 2 minutes
+sleep 120
+# Reads the real-time status of kubectl executions until they finish
+kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager > /home/ruben/Escritorio/kube.txt 2>&1 &
+while true
+do
+		if grep -q '^----------$' "/home/ruben/Escritorio/kube.txt"; then
+		pkill kubectl
+		break
+	else
+		sleep 1
+	fi
+done
+# Waits 2 minutes
+sleep 120
+
 # Create a file indicating that AWX has been successfully installed on the computer
 sudo touch /var/lib/awx/awx-installed
 
@@ -1689,39 +1727,42 @@ echo ""
 
 # Messages indicating to the user that AWX has been successfully installed
 echo "✅  Done! AWX has been installed successfully"
-echo "🕔  It will take several minutes before you can access AWX"
-echo "🤔  You can check the installation status by running: kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager"
+echo "💡  The computer is going to reboot in 10 seconds and you don't have to do anything more"
+echo "🕔  Rebooting in 10 seconds..."
 
 echo ""
 
-# Informs the user how they can receive help
-echo "❓  Do you need help managing the AWX container?"
-echo "💡  Type 'awx help' in the terminal to access instructions"
-
-echo ""
-
-# Asks the user if they want to delete the temporary files that have been used for the installation
-echo "🗑️   Would you like to remove the temporary files used for the set up? (y/N)"
-read -p "⏩  " answer
-# If the user enters an invalid command, repeats the question.
-while [[ $answer != "s" && $answer != "S" && $answer != "y" && $answer != "Y" && $answer != "" && $answer != "n" && $answer != "N" ]]
-do
-	echo ""
-	echo "🗑️   Would you like to remove the temporary files used for the installation? (y/N)"
-	read -p "⏩  " answer
-done
 # If the answer is 'n', 'N' or enter, exits the script
 if [[ $answer == "n" || $answer == "N" || $answer == "" ]]
 then
 	cd "$current_path" 2>&1> /dev/null
+	sleep 10
 	echo ""
-	exit 0
+	sudo reboot
 fi
 
-deletesetup
+sudo reboot
+sudo rm -rf minikube-linux-amd64 2>&1> /dev/null
+sudo rm -rf kustomize_v4.5.7_linux_amd64.tar 2>&1> /dev/null
+sudo rm -rf kustomize_v4.5.7_linux_amd64.tar.gz 2>&1> /dev/null
+sudo rm -rf kustomize 2>&1> /dev/null
+sudo rm -rf kustomization.yaml 2>&1> /dev/null
+sudo rm -rf kubectl.sha256 2>&1> /dev/null
+sudo rm -rf kubectl 2>&1> /dev/null
+sudo rm -rf awx-demo.yaml 2>&1> /dev/null
+sudo chmod 755 /etc/ 2>&1> /dev/null 2>&1> /dev/null
+sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
+sudo chmod 755 /bin/ 2>&1> /dev/null
+sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
+cd "$current_path" 2>&1> /dev/null
+sleep 10
+echo ""
+sudo reboot
 
 fi
 
+echo ""
+echo "❌  There has been an unknown error. Please contact the administrator"
 cd "$current_path" 2>&1> /dev/null
 echo ""
 exit 1
