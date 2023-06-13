@@ -10,7 +10,6 @@
 
 
 
-
 # Delete set-up function
 # Uninstall the process if something goes wrong during the set-up
 function deletesetup {
@@ -27,10 +26,16 @@ function deletesetup {
 	sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
 	sudo chmod 755 /bin/ 2>&1> /dev/null
 	sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
+	cd "$current_path" > 2>&1> /dev/null
 	echo ""
 	exit 1
 
 }
+
+# Sets the installation and current path
+current_path="$(pwd)" 2>&1> /dev/null
+script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" 2>&1> /dev/null
+cd "$script_path" 2>&1> /dev/null
 
 # Checks if it is being run as an administrator
 if [[ $EUID -eq 0 ]]; then
@@ -121,7 +126,6 @@ if ! [ -d "/var/lib/awx" ]; then
 
 
 
-
 # Script title
 echo ""
 printf '\033[1m🔨  AWX SET UP - PART 1  🔨\n----------------------------\033[0m\n'
@@ -201,6 +205,22 @@ then
 	echo ""
 	echo "❌  Error checking the repositories list"
 	exit 1
+fi
+
+# Creates the file /var/lib/awx/awx-setup-file
+if ! echo "$script_path" > /var/lib/awx/awx-setup-file
+then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error creating automatic startup service"
+	deletesetup
+fi
+# Changes the permissions of the file /var/lib/awx/awx-setup-file
+if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error creating automatic startup service"
+	deletesetup
 fi
 
 # Installs curl
@@ -413,12 +433,12 @@ if ! sudo cat > /bin/awxctl <<'EOF'
 # Free use
 # --------------
 
+
+
+
 # Information variables
 version="1.0.0"
 repository="https://github.com/rubendelaviuda/awx-setup"
-
-
-
 
 
 # --------------
@@ -1070,7 +1090,11 @@ function uninstall_awx {
 
 	echo ""
 
+	# Script title
+	printf '\033[1m🚮   UNINSTALL - STATUS  🚮\n---------------------------\033[0m\n'
+
 	# Checks the internet connection
+	echo "🌐  Checking internet connection..."
 	check_net "$param_num" "$command" "$parameter"
 
 	# Uninstalls the service
@@ -1368,7 +1392,6 @@ if ! sudo cat > /etc/auto-awx.sh <<EOF
 
 
 
-
 # Script title
 echo "" > /var/lib/awx/awx-status
 printf '\033[1m🚀  STARTING AWX CONTAINER  🚀\n----------------------------\n\033[0m' >> /var/lib/awx/awx-status
@@ -1404,6 +1427,8 @@ if ! sudo chmod 777 /etc/auto-awx.sh; then
 fi
 # Creates the file /etc/systemd/system/auto-awx.service
 if ! sudo cat > /etc/systemd/system/auto-awx.service <<EOF
+
+
 # --------------
 # Systemd service made by Ruben de la Viuda Redondo for automatic start of AWX container on docker in minikube
 # This service is a final degree project for 'ASIR' at IES Gaspar Melchor de Jovellanos in Fuenlabrada
@@ -1413,11 +1438,9 @@ if ! sudo cat > /etc/systemd/system/auto-awx.service <<EOF
 
 
 
-
 # Information variables
 version="1.0.0"
 repository="https://github.com/rubendelaviuda/awx-setup"
-
 
 
 # Service description
@@ -1450,29 +1473,14 @@ if ! sudo chmod 777 /etc/systemd/system/auto-awx.service; then
 	echo "❌  Error creating automatic startup service"
 	deletesetup
 fi
-# Creates the file /var/lib/awx/awx-setup-file
-script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-file_name=$(basename "$script_path")
-directory=$(dirname "$script_path")
-if ! sudo echo "$directory" > /var/lib/awx/awx-setup-file
-then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Error creating automatic startup service"
-	deletesetup
-fi
-# Changes the permissions of the file /var/lib/awx/awx-setup-file
-if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Error creating automatic startup service"
-	deletesetup
-fi
 
 # Notifies the user that the script has finished and the computer is going to reboot
 echo "✅  Dependencies installation complete"
 echo "💡  The computer is going to reboot. You must run the installer again to continue with the installation of AWX"
 echo "🕔  Rebooting in 5 seconds..."
+
+cd "$current_path" 2>&1> /dev/null
+
 # Waits for 5 seconds and reboots the computer
 sleep 5
 echo ""
@@ -1699,6 +1707,7 @@ done
 # If the answer is 'n', 'N' or enter, exits the script
 if [[ $answer == "n" || $answer == "N" || $answer == "" ]]
 then
+	cd "$current_path" 2>&1> /dev/null
 	echo ""
 	exit 0
 fi
@@ -1707,4 +1716,5 @@ deletesetup
 
 fi
 
+cd "$current_path" 2>&1> /dev/null
 exit 1
