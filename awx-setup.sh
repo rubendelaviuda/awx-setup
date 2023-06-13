@@ -23,7 +23,7 @@ function deletesetup {
 	sudo rm -rf kubectl 2>&1> /dev/null
 	sudo rm -rf awx-demo.yaml 2>&1> /dev/null
 	sudo rm -rf /var/lib/awx/kubectl-status 2>&1> /dev/null
-	sudo chmod 755 /etc/ 2>&1> /dev/null 2>&1> /dev/null
+	sudo chmod 755 /etc/ 2>&1> /dev/null
 	sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
 	sudo chmod 755 /bin/ 2>&1> /dev/null
 	sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
@@ -34,8 +34,8 @@ function deletesetup {
 }
 
 # Sets the installation and current path
-current_path="$(pwd)" 2>&1> /dev/null
-script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" 2>&1> /dev/null
+current_path="$(pwd)"
+script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_path" 2>&1> /dev/null
 
 # Checks if it is being run as an administrator
@@ -203,7 +203,7 @@ echo ""
 
 # Updates repositories list
 echo "🔃  Updating repositories list..."
-if ! sudo apt-get update > /dev/null
+if ! sudo apt-get update 2>&1> /dev/null > /dev/null
 then
 	# Informs the user about the error and exits the script with errors
 	echo ""
@@ -214,7 +214,7 @@ fi
 
 # Installs curl
 echo "🔧  Installing curl..."
-if ! sudo apt-get install -y curl > /dev/null
+if ! sudo apt-get install -y curl 2>&1> /dev/null > /dev/null
 then
 	# Informs the user about the error and exits the script with errors
 	echo ""
@@ -225,7 +225,7 @@ fi
 
 # Downloads minikube
 echo "⏬  Downloading minikube..."
-if ! sudo curl -LOs https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 > /dev/null; then
+if ! sudo curl -LOs https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error downloading minikube"
@@ -234,7 +234,7 @@ fi
 
 # Installs minikube in /usr/local/bin
 echo "🔧  Installing minikube..."
-if ! sudo install minikube-linux-amd64 /usr/local/bin/minikube > /dev/null; then
+if ! sudo install minikube-linux-amd64 /usr/local/bin/minikube 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing minikube"
@@ -244,21 +244,21 @@ fi
 # Installs docker
 echo "🔧  Installing docker..."
 # Creates the group docker
-if ! sudo groupadd docker; then
+if ! sudo groupadd docker 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing docker"
 	deletesetup
 fi
 # Adds the selected user to the docker group
-if ! sudo usermod -aG docker "$username"; then
+if ! sudo usermod -aG docker "$username" 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing docker"
 	deletesetup
 fi
 # Installs docker
-if ! sudo apt-get install -y docker.io > /dev/null; then
+if ! sudo apt-get install -y docker.io 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing docker"
@@ -267,7 +267,7 @@ fi
 
 # Downloads kustomize
 echo "⏬  Downloading kustomize..."
-if ! sudo curl --silent --location --remote-name https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz; then
+if ! sudo curl --silent --location --remote-name https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error downloading kustomize"
@@ -276,19 +276,19 @@ fi
 
 # Unpacks kustomize
 echo "📚  Unpacking kustomize..."
-if ! sudo gunzip --force kustomize_v4.5.7_linux_amd64.tar.gz; then
+if ! sudo gunzip --force kustomize_v4.5.7_linux_amd64.tar.gz 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error unpacking kutomize"
 	deletesetup
 fi
-if ! sudo tar -tvf kustomize_v4.5.7_linux_amd64.tar > /dev/null; then
+if ! sudo tar -tvf kustomize_v4.5.7_linux_amd64.tar 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error unpacking kutomize"
 	deletesetup
 fi
-if ! sudo tar -xvf kustomize_v4.5.7_linux_amd64.tar kustomize > /dev/null; then
+if ! sudo tar -xvf kustomize_v4.5.7_linux_amd64.tar kustomize 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error unpacking kutomize"
@@ -297,7 +297,7 @@ fi
 
 # Copies kustomize.
 echo "🚚  Copying kustomize..."
-if ! sudo cp kustomize /usr/local/bin; then
+if ! sudo cp kustomize /usr/local/bin 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying kustomize"
@@ -306,21 +306,21 @@ fi
 
 # Downloads kubectl
 echo "⏬  Downloading kubectl..."
-if ! sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
+if ! sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error downloading kubectl"
 	deletesetup
 fi
 # Downloads kubectl checksum
-if ! sudo curl --silent -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"; then
+if ! sudo curl --silent -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256" 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error downloading kubectl"
 	deletesetup
 fi
 # Checks if kubectl has been downloaded correctly
-if ! sudo echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check > /dev/null; then
+if ! sudo echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error downloading kubectl"
@@ -329,14 +329,14 @@ fi
 
 # Installs kubectl
 echo "🔧  Installing Kubectl..."
-if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl > /dev/null; then
+if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing kubectl"
 	deletesetup
 fi
 # Checks if kubectl has been installed correctly
-if ! sudo kubectl version --short 2> /dev/null | grep -qE '(Client|Server|Kustomize) Version' > /dev/null; then
+if ! sudo kubectl version --short 2>&1> /dev/null | grep -qE '(Client|Server|Kustomize) Version' 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error installing kubectl"
@@ -345,39 +345,39 @@ fi
 
 # Copies control commands
 echo "🚚  Copying control command..."
-if ! sudo chmod 777 /etc/ > /dev/null; then
+if ! sudo chmod 777 /etc/ 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
 	deletesetup
 fi
-if ! sudo chmod 777 /etc/systemd/system/ > /dev/null; then
+if ! sudo chmod 777 /etc/systemd/system/ 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
 	deletesetup
 fi
-if ! sudo chmod 777 /bin/ > /dev/null; then
+if ! sudo chmod 777 /bin/ 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
 	deletesetup
 fi
-if ! sudo chmod 777 /etc/bash_completion.d/ > /dev/null; then
+if ! sudo chmod 777 /etc/bash_completion.d/ 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
 	deletesetup
 fi
 # Creates the folder /var/lib/awx/
-if ! sudo mkdir -p /var/lib/awx/ > /dev/null; then
+if ! sudo mkdir -p /var/lib/awx/ 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
 	deletesetup
 fi
 # Changes the permissions of the folder /var/lib/awx/
-if ! sudo chmod 777 /var/lib/awx/ > /dev/null; then
+if ! sudo chmod 777 /var/lib/awx/ 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
@@ -392,7 +392,7 @@ then
 	deletesetup
 fi
 # Changes the permissions of the file /var/lib/awx/awx-setup-file
-if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
+if ! sudo chmod 777 /var/lib/awx/awx-setup-file 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
@@ -406,7 +406,7 @@ if ! sudo echo "$username" > /var/lib/awx/awx-user; then
 	deletesetup
 fi
 # Changes the permissions of the file /var/lib/awx/awx-user
-if ! sudo chmod 777 /var/lib/awx/awx-user > /dev/null; then
+if ! sudo chmod 777 /var/lib/awx/awx-user 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
@@ -420,7 +420,7 @@ if ! sudo touch /var/lib/awx/awx-status > /dev/null; then
 	deletesetup
 fi
 # Changes the permissions of the file /var/lib/awx/awx-status
-if ! sudo chmod 777 /var/lib/awx/awx-status > /dev/null; then
+if ! sudo chmod 777 /var/lib/awx/awx-status 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
@@ -1297,7 +1297,7 @@ then
 	deletesetup
 fi
 # Changes the permissions of the file /bin/awxctl
-if ! sudo chmod 777 /bin/awxctl; then
+if ! sudo chmod 777 /bin/awxctl 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control command"
@@ -1371,13 +1371,13 @@ then
 	deletesetup
 fi
 # Changes the permissions of the file /etc/bash_completion.d/awxctl
-if ! sudo chmod 777 /etc/bash_completion.d/awxctl; then
+if ! sudo chmod 777 /etc/bash_completion.d/awxctl 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control command"
 	deletesetup
 fi
-if ! source /etc/bash_completion.d/awxctl; then
+if ! source /etc/bash_completion.d/awxctl 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control command"
@@ -1427,7 +1427,7 @@ then
 	deletesetup
 fi
 # Changes the permissions of the file /etc/auto-awx.sh
-if ! sudo chmod 777 /etc/auto-awx.sh; then
+if ! sudo chmod 777 /etc/auto-awx.sh 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error creating automatic startup service"
@@ -1475,7 +1475,7 @@ then
 	deletesetup
 fi
 # Changes the permissions of the file /etc/systemd/system/auto-awx.service
-if ! sudo chmod 777 /etc/systemd/system/auto-awx.service; then
+if ! sudo chmod 777 /etc/systemd/system/auto-awx.service 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error creating automatic startup service"
@@ -1583,7 +1583,7 @@ fi
 
 # Creates alias for kubectl
 echo "🟰  Creating alias..."
-if ! alias kubectl="minikube kubectl --"; then
+if ! alias kubectl="minikube kubectl --" 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error creating alias..."
@@ -1617,7 +1617,7 @@ fi
 
 # Runs configuration
 echo "🚀  Running configuration..."
-if ! kustomize build . | kubectl apply -f - > /dev/null; then
+if ! kustomize build . | kubectl apply -f - 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error running configuration..."
@@ -1626,7 +1626,7 @@ fi
 
 # Changes default namespace
 echo "🔄  Changing default namespace..."
-if ! kubectl config set-context --current --namespace=awx > /dev/null; then
+if ! kubectl config set-context --current --namespace=awx 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error changing default namespace..."
@@ -1668,7 +1668,7 @@ fi
 
 # Runs configuration
 echo "🚀  Running configuration..."
-if ! kustomize build . | kubectl apply -f - > /dev/null; then
+if ! kustomize build . | kubectl apply -f - 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error running configuration"
@@ -1677,13 +1677,13 @@ fi
 
 # Updates service list...
 echo "🔄  Updating service list..."
-if ! sudo systemctl daemon-reload > /dev/null; then
+if ! sudo systemctl daemon-reload 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error updating service list"
 	deletesetup
 fi
-if ! sudo systemctl enable -q auto-awx.service > /dev/null; then
+if ! sudo systemctl enable -q auto-awx.service 2>&1> /dev/null; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error updating service list"
@@ -1694,13 +1694,13 @@ fi
 echo "🔧  Installing AWX..."
 echo "🕔  This will take several minutes"
 # Checks if there is any 'kubectl' process running on the system and if so, kills it
-if pgrep tail > /dev/null; then
+if pgrep tail 2>&1> /dev/null; then
 	pkill kubectl
 fi
 # Creates an error control
 # If the user presses CTRL+C, kills the 'kubectl' process
 cleanup() {
-	pkill kubectl
+	pkill kubectl 2>&1> /dev/null
 	cd "$current_path" 2>&1> /dev/null
 	exit 1
 }
@@ -1712,7 +1712,7 @@ kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager > /va
 while true
 do
 		if grep -q '^----------$' "/var/lib/awx/kubectl-status"; then
-		pkill kubectl
+		pkill kubectl 2>&1> /dev/null
 		break
 	else
 		sleep 1
@@ -1722,7 +1722,7 @@ done
 sleep 120
 
 # Create a file indicating that AWX has been successfully installed on the computer
-sudo touch /var/lib/awx/awx-installed
+sudo touch /var/lib/awx/awx-installed 2>&1> /dev/null
 
 echo ""
 
@@ -1753,7 +1753,7 @@ sudo rm -rf kubectl.sha256 2>&1> /dev/null
 sudo rm -rf kubectl 2>&1> /dev/null
 sudo rm -rf awx-demo.yaml 2>&1> /dev/null
 sudo rm -rf /var/lib/awx/kubectl-status 2>&1> /dev/null
-sudo chmod 755 /etc/ 2>&1> /dev/null 2>&1> /dev/null
+sudo chmod 755 /etc/ 2>&1> /dev/null
 sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
 sudo chmod 755 /bin/ 2>&1> /dev/null
 sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
