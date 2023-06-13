@@ -26,7 +26,7 @@ function deletesetup {
 	sudo chmod 755 /etc/systemd/system/ 2>&1> /dev/null
 	sudo chmod 755 /bin/ 2>&1> /dev/null
 	sudo chmod 755 /etc/bash_completion.d/ 2>&1> /dev/null
-	cd "$current_path" 2>&1> /dev/null
+	cd "$current_path" > 2>&1> /dev/null
 	echo ""
 	exit 1
 
@@ -189,8 +189,8 @@ printf '\033[1m🔨  SET UP 1 - STATUS  🔨\n--------------------------\033[0m\
 echo ""
 
 # Checks the internet connection by pinging Google
+echo "🌐  Checking internet connection..."
 ping -c4 google.com > /dev/null
-
 # If it doesn't work...
 if ! [ $? -eq 0 ]; then
 	# Informs the user about the error and exits the script with errors
@@ -205,6 +205,22 @@ then
 	echo ""
 	echo "❌  Error checking the repositories list"
 	exit 1
+fi
+
+# Creates the file /var/lib/awx/awx-setup-file
+if ! echo "$script_path" > /var/lib/awx/awx-setup-file
+then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error creating automatic startup service"
+	deletesetup
+fi
+# Changes the permissions of the file /var/lib/awx/awx-setup-file
+if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
+	# Informs the user about the error and exits the script with errors
+	echo ""
+	echo "❌  Error creating automatic startup service"
+	deletesetup
 fi
 
 # Installs curl
@@ -372,21 +388,6 @@ if ! sudo mkdir -p /var/lib/awx/ > /dev/null; then
 fi
 # Changes the permissions of the folder /var/lib/awx/
 if ! sudo chmod 777 /var/lib/awx/ > /dev/null; then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Error copying control commands"
-	deletesetup
-fi
-# Creates the file /var/lib/awx/awx-setup-file
-if ! echo "$script_path" > /var/lib/awx/awx-setup-file
-then
-	# Informs the user about the error and exits the script with errors
-	echo ""
-	echo "❌  Error copying control commands"
-	deletesetup
-fi
-# Changes the permissions of the file /var/lib/awx/awx-setup-file
-if ! sudo chmod 777 /var/lib/awx/awx-setup-file; then
 	# Informs the user about the error and exits the script with errors
 	echo ""
 	echo "❌  Error copying control commands"
@@ -1092,6 +1093,8 @@ function uninstall_awx {
 	# Script title
 	printf '\033[1m🚮   UNINSTALL - STATUS  🚮\n---------------------------\033[0m\n'
 
+	echo ""
+
 	# Checks the internet connection
 	echo "🌐  Checking internet connection..."
 	check_net "$param_num" "$command" "$parameter"
@@ -1135,6 +1138,7 @@ function uninstall_awx {
 
 	# Deletes the temporary files
 	echo "🗑️   Deleting temporary files..."
+	awx_setup_file=$(echo /var/lib/awx/awx-setup-file)
 	if ! sudo rm -r /var/lib/awx > /dev/null; then
 		echo ""
 		echo "❌  Error deleting temporary files"
@@ -1143,7 +1147,6 @@ function uninstall_awx {
 
 	# Deletes set-up files
 	echo "🗑️   Deleting setup-files..."
-	awx_setup_file=$(echo /var/lib/awx/awx-setup-file)
 	sudo rm -rf "$awx_setup_file/minikube-linux-amd64" 2>&1> /dev/null
 	sudo rm -rf "$awx_setup_file/kustomize_v4.5.7_linux_amd64.tar" 2>&1> /dev/null
 	sudo rm -rf "$awx_setup_file/kustomize_v4.5.7_linux_amd64.tar.gz" 2>&1> /dev/null
