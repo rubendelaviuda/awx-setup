@@ -1145,7 +1145,7 @@ function uninstall_awx {
 
 	# Deletes the temporary files
 	echo "🗑️   Deleting temporary files..."
-	awx_setup_file=$(echo /var/lib/awx/awx-setup-file)
+	awx_setup_file=$(cat /var/lib/awx/awx-setup-file)
 	echo "awx_setup_file es $6awx_setup_file"
 	if ! sudo rm -r /var/lib/awx > /dev/null; then
 		echo ""
@@ -1690,8 +1690,8 @@ if ! sudo systemctl enable -q auto-awx.service > /dev/null; then
 fi
 
 # Installs AWX
-echo "🕔  Installing AWX..."
-echo "🔧  This will take several minutes"
+echo "🔧  Installing AWX..."
+echo "🕔  This will take several minutes"
 # Checks if there is any 'kubectl' process running on the system and if so, kills it
 if pgrep tail > /dev/null; then
 	pkill kubectl
