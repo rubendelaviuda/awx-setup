@@ -1737,7 +1737,6 @@ then
 	sudo reboot
 fi
 
-sudo reboot
 sudo rm -rf minikube-linux-amd64 2>&1> /dev/null
 sudo rm -rf kustomize_v4.5.7_linux_amd64.tar 2>&1> /dev/null
 sudo rm -rf kustomize_v4.5.7_linux_amd64.tar.gz 2>&1> /dev/null
