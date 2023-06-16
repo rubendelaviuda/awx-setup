@@ -622,9 +622,9 @@ function show_help {
 	printf '\033[1m -  📋  awxctl list | awxctl --list | awxctl -l\033[0m - Displays the list of playbooks in AWX\n'
 	printf "\033[1m -  📜  awxctl read [playbook] | awxctl --read [playbook] | awxctl -e [playbook]\033[0m - Displays the content of a specific playbook. It must be accompanied by the playbook's name\n"
 	printf "\033[1m -  ➕  awxctl add [playbook] | awxctl --add [playbook] | awxctl -a [playbook]\033[0m - Add a playbook to AWX. It must be accompanied by the playbook's path\n"
-	printf "\033[1m -  🧹  awxctl delete [playbook] | awxctl --delete [playbook] | awxctl -d [playbook]\033[0m - Remove a playbook from AWX. You need to specify the playbook file's name to be deleted\n\n"
+	printf "\033[1m -  🧹  awxctl delete [playbook] | awxctl --delete [playbook] | awxctl -d [playbook]\033[0m - Remove a playbook from AWX. You need to specify the playbook file's name to be deleted\n"
 	printf '\033[1m -  📆  awxctl version | awxctl --version | awxctl -v\033[0m - Shows the current version of the awxctl command\n'
-	printf '\033[1m -  📆  awxctl uninstall | awxctl --uninstall | awxctl -u\033[0m - Uninstalls AWX and awxctl\n'
+	printf '\033[1m -  🚮  awxctl uninstall | awxctl --uninstall | awxctl -u\033[0m - Uninstalls AWX and awxctl\n\n'
 	printf '\033[1m⬇️   List of additional commands for AWX:\033[0m\n'
 	printf '\033[1m -  💡  sudo systemctl status auto-awx.service\033[0m - Checks the status of AWX automatic startup when the system starts\n'
 	printf '\033[1m -  🤖  sudo systemctl enable auto-awx.service\033[0m - Enables AWX automatic startup when the system starts\n'
@@ -1459,7 +1459,6 @@ Requires=docker.service
 
 # Service configuration
 [Service]
-User=ruben
 Environment=LANG=en_US.UTF-8
 Environment=LC_ALL=en_US.UTF-8
 ExecStart=/bin/bash /etc/auto-awx.sh
